@@ -1,0 +1,122 @@
+- hosts: localhost
+  connection: local
+  tasks:
+  - name: "generate key pair"
+    openssh_keypair:
+      path: ~/.ssh/ansible_id_rsa
+
+- name: Install Docker
+  hosts: all
+  become: true
+  tasks:
+  - name: jenkins user
+    user:
+      name: jenkins
+      shell: /bin/bash
+  - name: Install required system packages
+    apt: 
+      name: "{{ item }}" 
+      state: latest 
+      update_cache: yes
+    loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools']
+  - name: Add Docker GPG apt Key
+    apt_key:
+      url: https://download.docker.com/linux/ubuntu/gpg
+      state: present
+  - name: Add Docker Repository
+    apt_repository:
+      repo: deb https://download.docker.com/linux/ubuntu bionic stable
+      state: present
+  - name: Update apt and install docker-ce
+    apt: 
+      update_cache: yes 
+      name: docker-ce 
+      state: latest
+  - name: Install Docker Module for Python
+    pip:
+      name: docker
+  - name: Install pytest
+    pip:
+      name: pytest
+  - name: Add Jenkins User 
+    ansible.builtin.user:
+      name: jenkins
+      groups: docker
+      append: yes
+    notify: Restart docker
+  - name: add user to docker group
+    ansible.builtin.user:
+      name: ubuntu
+      groups: docker
+      append: yes
+    notify: Restart docker
+  handlers:
+  - name: Restart docker
+    service: 
+      name: docker
+      state: restarted
+
+- name: Install Jenkins
+  hosts: jenkins
+  become: true
+  tasks:
+    - name: Install Java
+      apt:
+        name: openjdk-8-jdk
+        state: present
+        update_cache: yes
+    - name: Download Jenkins Key
+      apt_key:
+        url: https://pkg.jenkins.io/debian/jenkins.io.key
+        state: present
+    - name: Import Jenkins Repo
+      apt_repository:
+        repo: deb http://pkg.jenkins.io/debian-stable binary/
+        state: present
+    - name: Apt Install Jenkins 
+      apt:
+        name: jenkins
+        state: present
+        update_cache: yes
+    - name: Start & Enable Jenkins
+      systemd:
+        name: jenkins
+        state: started
+        enabled: true
+    - name: Sleep for 15 seconds and continue with play
+      wait_for: timeout=15
+    - name: ssh folder
+      file:
+        path: /home/jenkins/.ssh
+        state: directory
+        mode: "0700"
+        owner: jenkins
+        group: jenkins
+    - name: install private key
+      copy:
+        src: ~/.ssh/ansible_id_rsa
+        dest: /home/jenkins/.ssh/id_rsa
+        owner: jenkins
+        group: jenkins
+        mode: u=rw,g=,o=
+    - name: Get init password Jenkins
+      shell: cat /var/lib/jenkins/secrets/initialAdminPassword
+      changed_when: false
+      register: result
+    - name: Print init password Jenkins
+      debug:
+        var: result.stdout
+    - name: Create a docker registry
+      docker_container:
+        name: registry
+        image: registry:2
+        ports:
+          - "5000:5000"
+
+- name: Install Docker Compose
+  hosts: all
+  become: true
+  tasks:
+  - name: Install Docker Compose
+    pip:
+      name: docker-compose

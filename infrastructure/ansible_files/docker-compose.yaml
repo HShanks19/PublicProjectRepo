@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+    - target: 80
+      published: 80
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ./nginx/nginx.conf
+      target: /etc/nginx/nginx.conf 
+  frontend:
+    container_name: frontend
+    image: hollyshanks/frontend
+    build: ./frontend
+  backend:
+    container_name: backend
+    image: hollyshanks/backend
+    build: ./backend
+  
