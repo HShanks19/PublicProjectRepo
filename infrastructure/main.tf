@@ -84,8 +84,6 @@ resource "local_file" "instructions_next" {
       b. Set up global credentials for:
         - DOCKER_PASSWORD
         - SSHKey
-        - DEV_IP
-        - PROD_IP
       c. For Production_Server use /main branch and production/Jenkinsfile 
          For Development_Server use /Dev branch and development/jenkinsfile
   DOC
