@@ -1,0 +1,32 @@
+version: "3.8"
+services:
+  flask-app-backend-test:
+    container_name: backend
+    build: ./backend
+    image: hollyshanks/backend
+    environment:
+      DATABASE_URI: mysql+pymysql://root:password@mysql:3306/users
+    ports:
+    - target: 5001
+      published: 5001
+      protocol: tcp
+  flask-app-frontend-test:
+    container_name: frontend
+    build: ./frontend
+    image: hollyshanks/frontend
+    ports:
+    - target: 5000
+      published: 5000
+      protocol: tcp
+  nginx-test:
+    image: nginx:latest
+    ports:
+    - target: 80
+      published: 80
+      protocol: tcp
+    volumes:
+    - type: bind
+      source: ./nginx/nginx.conf
+      target: /etc/nginx/nginx.conf
+
+

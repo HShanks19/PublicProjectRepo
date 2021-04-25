@@ -1,0 +1,53 @@
+pipeline {
+    agent any
+    environment {
+        DOCKER_USERNAME = "hollyshanks"
+        DOCKER_PASSWORD = credentials("DOCKER_PASSWORD")
+        DEV_IP = credentials("DEV_IP")
+        SSHKEY = credentials("SSHKey")
+    }
+    stages {
+        stage("Docker Login") {
+            steps {
+                sh "echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin"
+            }
+        }
+	stage("Build"){
+            steps {
+                sh "docker-compose build --parallel"
+            }
+        }
+        stage("Push"){
+            steps {
+                sh "docker-compose push"
+            }
+        }
+        stage("EC2 Test Deploy"){
+            steps{
+                withCredentials([file(credentialsId: 'SSHKey', variable: 'SSHKeyPair')]) {
+                     sh '''
+                        ssh -i ${SSHKeyPair} ubuntu@18.134.227.220 -oStrictHostKeyChecking=no  << EOF
+                        sudo apt-get update
+			rm -rf ./BAE-sfia2-brief
+                        git clone --single-branch --branch Dev https://github.com/HShanks19/BAE-sfia2-brief
+                        cd ~/BAE-sfia2-brief
+                        docker-compose build --parallel
+                        docker-compose up -d
+                    '''
+                }
+            }
+        }
+	stage('Test BackEnd') {			 
+		steps {	
+			sh "pip3 install -r requirements.txt"
+			sh "pytest backend/tests/test_backend.py"
+		}
+	}
+	stage('Test FrontEnd') {			 
+		steps {			 
+			sh "pip3 install -r requirements.txt"
+			sh "pytest frontend/tests/test_frontend.py"
+		}
+	}	
+    }
+}

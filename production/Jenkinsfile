@@ -1,0 +1,19 @@
+pipeline {
+    agent any
+    stages {
+        stage("Deploy Production Environment"){
+            steps{
+                withCredentials([file(credentialsId: 'SSHKey', variable: 'SSHKeyPair')]) {
+                     sh '''
+                        ssh -i ${SSHKeyPair} ubuntu@35.178.132.71 -oStrictHostKeyChecking=no  << EOF
+                        sudo apt-get update
+                        git clone https://github.com/HShanks19/BAE-sfia2-brief
+                        cd ~/BAE-sfia2-brief
+                        docker-compose build --parallel
+                        docker-compose up -d
+                    '''
+                }
+            }
+        }
+    }
+}
