@@ -5,7 +5,7 @@ pipeline {
             steps{
                 withCredentials([file(credentialsId: 'SSHKey', variable: 'SSHKeyPair')]) {
                      sh '''
-                        ssh -i ${SSHKeyPair} ubuntu@<PROD_IP> -oStrictHostKeyChecking=no  << EOF
+                        ssh -i ${SSHKeyPair} ubuntu@35.177.185.74 -oStrictHostKeyChecking=no  << EOF
                         sudo apt-get update
                         git clone https://github.com/HShanks19/PublicProjectRepo
                         cd ~/PublicProjectRepo
