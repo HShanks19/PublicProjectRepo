@@ -46,6 +46,7 @@ Below is a list of technologies we used to deploy this application
 We have used jira as our project management software. We chose jira as its an easy to use software that allows us to use scrum methodologies such as creating sprints and user stories.
 
 ![jira image](/images/Jira.PNG)
+![jira sprint](/images/jira-sprint.PNG)
 
 ### Github
 
