@@ -3,7 +3,6 @@ pipeline {
     environment {
         DOCKER_USERNAME = "hollyshanks"
         DOCKER_PASSWORD = credentials("DOCKER_PASSWORD")
-        DEV_IP = credentials("DEV_IP")
         SSHKEY = credentials("SSHKey")
     }
     stages {
@@ -22,15 +21,15 @@ pipeline {
                 sh "docker-compose push"
             }
         }
-        stage("EC2 Test Deploy"){
+        stage("Development Deployment"){
             steps{
                 withCredentials([file(credentialsId: 'SSHKey', variable: 'SSHKeyPair')]) {
                      sh '''
-                        ssh -i ${SSHKeyPair} ubuntu@18.134.227.220 -oStrictHostKeyChecking=no  << EOF
+                        ssh -i ${SSHKeyPair} ubuntu@3.8.2.27 -oStrictHostKeyChecking=no  << EOF
                         sudo apt-get update
-			rm -rf ./BAE-sfia2-brief
-                        git clone --single-branch --branch Dev https://github.com/HShanks19/BAE-sfia2-brief
-                        cd ~/BAE-sfia2-brief
+			            rm -rf ./PublicProjectRepo
+                        git clone --single-branch --branch Dev https://github.com/HShanks19/PublicProjectRepo
+                        cd ~/PublicProjectRepo
                         docker-compose build --parallel
                         docker-compose up -d
                     '''
@@ -45,7 +44,6 @@ pipeline {
 	}
 	stage('Test FrontEnd') {			 
 		steps {			 
-			sh "pip3 install -r requirements.txt"
 			sh "pytest frontend/tests/test_frontend.py"
 		}
 	}	
