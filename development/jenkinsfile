@@ -38,9 +38,9 @@ pipeline {
         }
 	stage('Test BackEnd') {			 
 		steps {	
-			sh "pip3 install -r requirements.txt"
+			sh "pip3 install -r backend/requirements.txt"
 			sh "pytest backend/tests/test_backend.py"
 		}
-	}	
+	}		
     }
 }
