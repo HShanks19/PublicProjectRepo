@@ -5,10 +5,10 @@ pipeline {
             steps{
                 withCredentials([file(credentialsId: 'SSHKey', variable: 'SSHKeyPair')]) {
                      sh '''
-                        ssh -i ${SSHKeyPair} ubuntu@35.178.132.71 -oStrictHostKeyChecking=no  << EOF
+                        ssh -i ${SSHKeyPair} ubuntu@<PROD_IP> -oStrictHostKeyChecking=no  << EOF
                         sudo apt-get update
-                        git clone https://github.com/HShanks19/BAE-sfia2-brief
-                        cd ~/BAE-sfia2-brief
+                        git clone https://github.com/HShanks19/PublicProjectRepo
+                        cd ~/PublicProjectRepo
                         docker-compose build --parallel
                         docker-compose up -d
                     '''
