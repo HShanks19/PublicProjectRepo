@@ -1,42 +1,43 @@
-# Project 2 devops
+# DevOps Project
 
-## Deploying flask app
+## Deploying Flask Application
 
 ### Contents
 
 * Overview
 * Technologies
 * Jira
-* Github
-* Aws
-* subnet
+* GitHub
 * Terraform
+* AWS
 * Ansible
-* Docker
+* Docker and Docker Compose
 * Jenkins
-* what went well
-* future additions
+* Acheivements
+* Improvements
+* Acknowledgements
 
 ### Overview
-In this project we have deployed a simple python flask app using a ci pipeline using amazon web services (AWS) 
-Using many different technologies we have been able to create a staging environment for developers to see if everything is working in the app before deploying to the production.
+
+In this project, we have built a CI/CD pipeline to deploye a simple python flask app using AWS.
+Using different technologies, we have been able to create a staging environment for developers to see if everything is working in the app before deploying to the production.
 
 ### Brief
+
 The application must:
 
 * Be deployed to a Virtual Machine for testing
-* Be deployed in a Docker Stack Using compose
+* Be deployed in a Docker Stack using Docker Compose
 * Make use of a managed Database solution
 
-### Technologies
+### Technology Stack
 
-Below is a list of technologies we used to deploy this application
+Technologies used in the development of our DevOps Pipeline:
+
 * Jira
 * Github
-* AWS
-* RDS
-* EC2
 * Terraform
+* AWS
 * Ansible
 * Jenkins
 * Docker
@@ -45,80 +46,77 @@ Below is a list of technologies we used to deploy this application
 
 We have used jira as our project management software. We chose jira as its an easy to use software that allows us to use scrum methodologies such as creating sprints and user stories.
 
-![jira image](/images/Jira.PNG)
 ![jira sprint](/images/jira-sprint.PNG)
+
+JIRA Board can be found [here](https://qarestaurant.atlassian.net/jira/software/projects/DEV/boards/7).
+
 
 ### Github
 
 We used github as our version control system as we are comfortable with this software and it is easy to incorporate with our jenkins box.
 
 
-We used a feature branch modal for this project as to ensure that the new features that we were pushing up did not break the project. This is also the modal that needed to be used for our pipeline as the dev branch is what we deployed to our development machine and the main branch is where we deployed the production. With out this modal we would not have been able to create a development and production site for our app.
+We used a feature branch model to ensure that when any new features were pushed up the code could be checked before it was allowed to be used in a production environment. The use of branches was also vital for the building of our Jenkins pipelines as it allowed us to differentiate between the developement and production environments.
+
+### Terraform
+
+We have used Terraform locally to configure the resources we were looking to use from AWS. In this project we used Terraform to create: 4 EC2 instances, 1 RDS instance, 1 Internet Gateway, 1 NAT gateway, 3 Subnets (1 public and 2 private). We also used Terraform to pass User Data to our bastion host. This allowed us to automate the installation of ansible and pass SQL commands to the RDS database.
 
 
 ### Amazon Web Services (AWS)
 
-We used AWS as we needed a reliable low-cost infrastructure that we could confidently deploy our application too. 
+We used AWS as we needed a reliable low-cost infrastructure that we could confidently deploy our application too. Within AWS we made use of a Virtual Private Cloud. By utilising this technology, we can control the access users have to our application. By only publishing our nginx container and keeping the other docker containers (database, backend) in a private subnet, we have been able to keep data more secure and limit access to it.
 
+We used two main features of AWS to complete this project:
 
-### Virtual Private Cloud (VPC)
-
-We have created a vpc that houses our instances in. We have done this so that our front end can be accessed by a user on the internet and our backend in a private subnet so that users can’t access our database directly.
-
-
-
-### Relational Database Service (RDS)
-
-We used and RDS for our database this meant that our database is scalable.
-
-
-### Elastic Compute Cloud (EC2)
-
-We used four ec2 instances all deployed with ubuntu on. We chose ubuntu as this is a light weight operating system that can easily be spun up. This makes our infrastructure easy to be torn down and spun up again with minimal human intervention.
-
-
-### Terraform
-
-We have used Terraform to configure and deploy all of our ec2 instances and installs ansible on our bastion host. This allows us to run a file to create our instances meaning that we do not fall prey to environment drift within our infrastructure 
+* Relational Database Service (RDS): This was used to house our database and has the advantage of allowing our database to be scalable.
+* EC2 (Elastic Cloud Computing): We used EC2 instances to house the different components of our app, as well as using them as an ansible controller and as our Jenkins machine.
+                                 Each instance was spun up with ubuntu on as it is a light-weight operating system, making the infrastructure easily torn down and spun back up.
 
 
 ### Ansible
 
-We have used ansible to configure our instances ensuring that all the software we need is installed such as Docker, Docker compose and jenkins. This allows us to automate the installation of software and ensure that all our instances have the correct software required to deploy our app.
+We used ansible to configure our EC2 instances, ensuring that all the software we need is installed such as Docker, Docker Compose and Jenkins. This allowed us to automate the installation of software and ensure that all our instances have the correct software required to deploy our app.
 
-Image
 
-### Docker
-We used docker to create contains to ensure our instances had the correct system environments for our application to run for example we needed to have nginx installed so that nginx can handle all requests before sending them to another server.
+### Docker and Docker Compose
+
+We used Docker and Docker compose to create containers to house the different parts of our application and allow them to talk to each other. By using Docker we could house the front and back end of the application in different containers but put them on the same network to allow them to communicate with each other without the end user being able to access any containers that they are not given explicit access to.
 
 
 ### Jenkins
 
-We have created one jenkins instance that has two jenkins pipelines in, these are our development pipeline and our production pipeline. Our development pipeline is where we deploy from our dev branch which allows us to run our test and ensure that the application is running correctly in a live environment. Our production builds and deploys our application to the live environment.
+Jenkins was deployed on an EC2 instance using Ansible. Within Jenkins, we configured 2 pipelines for Development and Production.
+
+The development pipeline is set up to build every time there is a push to the Dev Branch of this repository using a webhook. It is designed to test the application and allow us to view how any changes we have made to our code will affect the application before pushing the code to the main branch.
 
 ![jenkins development image](/images/jenkins-development.PNG)
+
+Once we are satisfied that the new code is running on the development pipeline, we can push the code to main which will trigger a build in the Production Pipeline. This pipeline builds and deploys our application to the live environment.
+
 ![jenkins production images](/images/jenkins-production.PNG)
 
-### What went well what went bad
-I feel like our jenkins pipelines were deployed with minimal difficulties.
 
-We tried to deploy the tests but found that we ran out of time and when trying to deploy the app from a private github this was too difficult for the short space of time we had.
+### Acheivements
 
+* Working Jenkins Pipelines- Both our development and production pipelines deploy a working application to the relevant EC2 Instance.
+* Automation- We began work on automating as much of the process as possible and feel as though we made good progress considering the time we had available. 
+* Terraform- We used terraform to fully build the environment we worked in. We also would feel confident using the terraform to continuall spin up the same enviroment.
 
+### Improvements
+
+* Testing- Fix the errors for the front-end test so that both the back and front end tests could be run in the development pipeline.
+* GitHub- Allow for the deployment of the pipeline from a private GitHub repository.
+* Ansible- Utilise the roles feature in Ansible to make the code more streamline and easy to follow. This would also help us ensure only the correct pieces of software were being downloaded onto each virtual machine.
 
 ### Future prospects
 
-* Push more to docker hub so that we could pull the images down 
-* Connect through a private repo in github
-* Run pytests on the development instance 
+* Use the images that we pushed to Docker Hub to build the application on the production/ deployment Virtual Machines.
+* Continue to automate more of the pipeline. Look into using Terraform to configure the database. Use terraform to create Jenkinsfiles/Docker-Compose files filled with the correct information.
 
+### Acknowledgements
 
-
-### Conclusion
-
-
-We have created a small successful infrastructure Ci pipeline that can be used to aid the development of the application.
-
+We would like to acknowledge the help of our trainers and our fellow trainees for their help during this project. 
 
 
 
