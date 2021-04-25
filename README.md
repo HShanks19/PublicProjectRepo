@@ -45,7 +45,7 @@ Below is a list of technologies we used to deploy this application
 
 We have used jira as our project management software. We chose jira as its an easy to use software that allows us to use scrum methodologies such as creating sprints and user stories.
 
-![jira image](HShanks19/PublicProjectRepo/images/Jira.PNG)
+![jira image](/images/Jira.PNG)
 
 ### Github
 
@@ -95,8 +95,8 @@ We used docker to create contains to ensure our instances had the correct system
 
 We have created one jenkins instance that has two jenkins pipelines in, these are our development pipeline and our production pipeline. Our development pipeline is where we deploy from our dev branch which allows us to run our test and ensure that the application is running correctly in a live environment. Our production builds and deploys our application to the live environment.
 
-![jenkins development image](PublicProjectRepo/images/jenkins-development.PNG)
-![jenkins production images](PublicProjectRepo/images/jenkins-production.PNG)
+![jenkins development image](/images/jenkins-development.PNG)
+![jenkins production images](/images/jenkins-production.PNG)
 
 ### What went well what went bad
 I feel like our jenkins pipelines were deployed with minimal difficulties.
