@@ -9,7 +9,6 @@ module "vpc" {
 }
 module "subnets" {
     source          = "./subnets"
-    
     vpc_id          = module.vpc.vpc_id
     route_id_public = module.vpc.route_id_pub
     sec_group_id    = module.vpc.sec_group_id
