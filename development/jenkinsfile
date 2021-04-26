@@ -27,7 +27,7 @@ pipeline {
                      sh '''
                         ssh -i ${SSHKeyPair} ubuntu@3.8.210.214 -oStrictHostKeyChecking=no  << EOF
                         sudo apt-get update
-			            rm -rf ./PublicProjectRepo
+			                  rm -rf ./PublicProjectRepo
                         git clone --single-branch --branch Dev https://github.com/HShanks19/PublicProjectRepo
                         cd ~/PublicProjectRepo
                         docker-compose build --parallel
@@ -38,9 +38,9 @@ pipeline {
         }
 	stage('Test BackEnd') {			 
 		steps {	
-			sh "pip3 install -r requirements.txt"
+			sh "pip3 install -r backend/requirements.txt"
 			sh "pytest backend/tests/test_backend.py"
 		}
 	}	
-    }
+   }
 }
