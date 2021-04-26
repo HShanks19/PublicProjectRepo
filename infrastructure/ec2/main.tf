@@ -89,5 +89,4 @@ resource "aws_db_instance" "mysqldb" {
   parameter_group_name   = "default.mysql5.7"
   publicly_accessible    = false
   skip_final_snapshot    = true
-  snapshot_identifier    = "mysqldbsetup"
 }
