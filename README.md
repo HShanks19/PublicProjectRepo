@@ -116,7 +116,7 @@ Once we are satisfied that the new code is running on the development pipeline, 
 
 ### Acknowledgements
 
-We would like to acknowledge the help of our trainers and our fellow trainees for their help during this project. 
+We would like to acknowledge the help of our trainers and our fellow trainees during this project. 
 
 
 
